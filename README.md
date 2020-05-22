@@ -9,4 +9,4 @@ zmc/caisse.h
 
 ---
 ## Containers
-### zmc::vector<T> - contiguous memory managed array
+### zmc::vector<<T>T> - contiguous memory managed array
