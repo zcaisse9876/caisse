@@ -26,6 +26,23 @@ vector<T>::vector() : elem{new T[allocationInc]}, allocated{allocationInc}, sz{0
 }
 
 template <typename T>
+vector<T>::vector(const T *a, const T *b)
+{
+  int d = std::distance(a, b);
+  int toAlloc = d < allocationInc ? allocationInc : d;
+  elem = new T[toAlloc];
+  allocated = toAlloc;
+  sz = d;
+  for (int i = 0; a != b; ++a, ++i)
+    elem[i] = *a;
+}
+
+template <typename T>
+vector<T>::vector(int s) : elem{new T[s]}, allocated{s}, sz{0} // Default constructor, base 10 memory blocks reserved.
+{
+}
+
+template <typename T>
 vector<T>::vector(std::initializer_list<T> l) : elem{new T[l.size()]}, allocated{static_cast<int>(l.size())}, sz{static_cast<int>(l.size())} //  Initilizer list support.
 {
   auto it = l.begin();
@@ -129,7 +146,7 @@ T vector<T>::pop_back() // Removes last element T in vector, scales down reserve
 }
 
 template <typename T>
-T &vector<T>::operator[](int i) // Subscript operator for access by index.
+T &vector<T>::operator[](const int i) // Subscript operator for access by index.
 {
   if (i >= this->sz || i < 0)
     throw std::out_of_range("Index out of Range!");
