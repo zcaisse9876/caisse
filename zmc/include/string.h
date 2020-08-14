@@ -35,6 +35,8 @@ public:
   int alloc(); // Returns size allocated, for testing
   char* begin(); // pointer to beginning of array
   char* end(); // pointer to one passed end of array
+  void replace(int i, int len, const string &text);
+  string substr(int begin, int end);
   friend std::ostream &operator<<(std::ostream &os, const string &src); // Declaring overriden << operator as friend for private access
 };
 
