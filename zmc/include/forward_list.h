@@ -12,72 +12,68 @@ private:
   {
     T value;
     ListNode *next;
-    ListNode(T v) : value{v}, next{nullptr} {}
-    virtual ~ListNode() { std::cout << "Deleted: " << this->value << std::endl; if (next) delete next; }
-  };
+    ListNode(T v);
+    ~ListNode();
+  }; // struct forward_list<T>::ListNode
 
   forward_list<T>::ListNode *head;
   forward_list<T>::ListNode *tail;
   int _size;
 
 public:
-  class iterator
+  template <bool flag, typename PointerType>
+  class base_iterator
   {
   private:
-    forward_list<T>::ListNode* el;
-  
+    PointerType el;
+
   public:
-    iterator(forward_list<T>::ListNode* e): el(e) {}
+    base_iterator(PointerType e);
+    typename std::conditional<flag, const T &, T &>::type operator*() const;
+    // typename std::conditional<flag, const T &, T &>::type operator*() const;
+    forward_list<T>::base_iterator<flag, PointerType> operator++(int);
+    forward_list<T>::base_iterator<flag, PointerType> operator++();
+    bool operator==(const forward_list<T>::base_iterator<flag, PointerType> &b);
+    bool operator!=(const forward_list<T>::base_iterator<flag, PointerType> &b);
+  }; // class forward_list<T>::base_iterator<PointerType>
 
-    T& operator*()
-    {
-      if (this->el)
-        return this->el->value;
-      else
-        throw std::out_of_range("Index out of Range!");
-    }
-
-    forward_list<T>::iterator operator++(int)
-    {
-
-      if (!this->el)
-        throw std::out_of_range("Index out of Range!");
-
-      forward_list<T>::iterator orig(this->el);
-      this->el = el->next;
-      return orig;
-    }
-
-    forward_list<T>::iterator operator++()
-    {
-      if (!this->el)
-        throw std::out_of_range("Index out of Range!");
-
-      this->el = el->next;
-      return *this;
-    }
-
-    bool operator==(const forward_list<T>::iterator& b)
-    {
-      return this->el == b.el;
-    }
-
-    bool operator!=(const forward_list<T>::iterator& b)
-    {
-      return !(*this == b);
-    }
-  };
-
+  typedef forward_list<T>::base_iterator<false, forward_list<T>::ListNode*> iterator;
+  typedef forward_list<T>::base_iterator<true, const forward_list<T>::ListNode*> const_iterator;
+ 
+  // Constructors and Operators
   forward_list();
   forward_list(std::initializer_list<T> vals);
+  forward_list(const forward_list<T>& src); // Copy Constructor
+  forward_list(forward_list<T>&& src); // Move Constructor
+  forward_list<T>& operator=(const forward_list<T>& src); // Copy Assignment Operator
+  forward_list<T>& operator=(forward_list<T>&& src); // Move Assignment Operator
   ~forward_list();
+
+
+  // Modifiers
   void push_front(T val);
   void push_back(T val);
   void pop_front();
-  int size();
+  void clear();
+  void swap(forward_list<T>& src);
+
+  // Operations
+
+
+  // Element Access
+  T& front();
+
+  // Capacity
   bool empty();
+  int size() const;
+
+  // Iterators
   forward_list<T>::iterator begin();
   forward_list<T>::iterator end();
+  forward_list<T>::const_iterator begin() const;
+  forward_list<T>::const_iterator end() const;
+  forward_list<T>::const_iterator cbegin() const;
+  forward_list<T>::const_iterator cend() const;
 };
 
 #include "../define/forward_list.cpp"
