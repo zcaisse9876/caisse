@@ -154,13 +154,13 @@ T &vector<T>::operator[](const int i) // Subscript operator for access by index.
 }
 
 template <typename T>
-int vector<T>::size() // Returns the # of items held in the vector.
+int vector<T>::size() const // Returns the # of items held in the vector.
 {
   return this->sz;
 }
 
 template <typename T>
-int vector<T>::alloc() // Returns the current # of contiguous blocks of memory allocated to hold type T.
+int vector<T>::alloc() const // Returns the current # of contiguous blocks of memory allocated to hold type T.
 {
   return this->allocated;
 }
