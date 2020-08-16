@@ -1,4 +1,4 @@
-# Caisse - C++ (11^) library
+# Caisse v0.0.2 - C++ (11^) library
 This serves as a general purpose library that will emulate some of the standard library containers but with less
 functionality. However, the library will aim to be as production ready as possible.
 
