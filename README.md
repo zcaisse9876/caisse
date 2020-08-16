@@ -12,3 +12,4 @@ zmc/caisse.h
 ### zmc::vector<<T>T> - Contiguous memory managed array of generic elements 
 ### zmc::pair<<T>T1, T2> - Pair structure for two generic data types 
 ### zmc::string - Contiguous memory managed array of characters
+### zmc::forward_list<<T>T> - Node based singly-linked list of generic elements
