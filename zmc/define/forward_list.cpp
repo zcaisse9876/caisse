@@ -4,25 +4,20 @@
 */
 
 template <typename T>
-forward_list<T>::forward_list() : head{nullptr}, tail{nullptr}, _size{0} {}
+forward_list<T>::forward_list() : tail{nullptr}, _size{0} {}
 
 template <typename T>
-forward_list<T>::forward_list(std::initializer_list<T> vals) : head{nullptr}, tail{nullptr}, _size{0}
+forward_list<T>::forward_list(std::initializer_list<T> src) : tail{nullptr}, _size{0}
 {
-  if (!vals.size()) return;
-  this->head = new forward_list<T>::ListNode(*vals.begin());
-  this->tail = head;
-  this->_size = vals.size();
-  for (auto it = vals.begin() + 1; it != vals.end(); ++it)
-  {
-    this->tail->next = new forward_list<T>::ListNode(*it);
-    this->tail = this->tail->next;
-  }
+  if (!src.size()) return;
+  for (const auto& n: src)
+    this->push_back(n);
 }
 
 template <typename T>
-forward_list<T>::forward_list(const forward_list<T> &src): _size{src.size()}, tail{nullptr}, head{nullptr}
+forward_list<T>::forward_list(const forward_list<T> &src) : tail{nullptr}, _size{0}
 {
+  if (!src.size()) return;
   for (const auto& n: src)
     this->push_back(n);
 }
@@ -42,9 +37,9 @@ forward_list<T>& forward_list<T>::operator=(const forward_list<T> &src)
 {
   if (&src == this) return *this;
   if (this->head) delete this->head;
-  this->head = nullptr;
+  this->head = new forward_list<T>::ListNode();
   this->tail = nullptr;
-  this->_size = src.size();
+  this->_size = 0;
   for (const auto& n: src)
     this->push_back(n);
 
@@ -81,63 +76,85 @@ void forward_list<T>::push_back(T val)
   if (!this->_size) return push_front(val);
   this->tail->next = new forward_list<T>::ListNode(val);
   this->tail = this->tail->next;
-  this->_size += 1;
+  ++this->_size;
 }
 
 template <typename T>
 void forward_list<T>::push_front(T val)
 {
-  auto nH = new forward_list<T>::ListNode(val);
-  nH->next = this->head;
-  this->head = nH;
-  if (!this->_size++) this->tail = this->head;
+  this->head->next = new forward_list<T>::ListNode(val, this->head->next);
+  if (!this->_size++) this->tail = this->head->next;
 }
 
 template <typename T>
 void forward_list<T>::pop_front()
 {
   if (!this->_size) return;
-  this->_size -= 1;
-  auto nextHead = this->head->next;
-  this->head->next = nullptr;
-  delete this->head;
-  this->head = nextHead;
+  --this->_size;
+  auto toDelete = this->head->next;
+  this->head->next = toDelete->next;
+  toDelete->next = nullptr;
+  delete toDelete;
 }
 
 template <typename T>
 typename forward_list<T>::iterator forward_list<T>::begin()
 {
-  return (this->_size ? this->head : nullptr);
+  return {this->head->next};
 }
 
 template <typename T>
 typename forward_list<T>::iterator forward_list<T>::end()
 {
-  return (nullptr);
+  return {nullptr};
+}
+
+template <typename T>
+typename forward_list<T>::iterator forward_list<T>::before_begin()
+{
+  return {this->head};
+}
+
+template <typename T>
+typename forward_list<T>::iterator forward_list<T>::before_end()
+{
+  return {this->tail};
 }
 
 template <typename T>
 typename forward_list<T>::const_iterator forward_list<T>::begin() const
 {
-  return (this->_size ? this->head : nullptr);
+  return {this->head->next};
 }
 
 template <typename T>
 typename forward_list<T>::const_iterator forward_list<T>::end() const
 {
-  return (nullptr);
+  return {nullptr};
 }
 
 template <typename T>
 typename forward_list<T>::const_iterator forward_list<T>::cbegin() const
 {
-  return (this->_size ? this->head : nullptr);
+  return {this->head->next};
 }
 
 template <typename T>
 typename forward_list<T>::const_iterator forward_list<T>::cend() const
 {
-  return (nullptr);
+  return {nullptr};
+}
+
+template <typename T>
+typename forward_list<T>::const_iterator forward_list<T>::cbefore_begin() const
+{
+  return {this->head};
+}
+
+template <typename T>
+typename forward_list<T>::const_iterator forward_list<T>::cbefore_end() const
+{
+  return {this->tail};
 }
 
 template <typename T>
@@ -171,15 +188,15 @@ bool forward_list<T>::empty()
 template <typename T>
 T& forward_list<T>::front()
 {
-  return this->head->value;
+  return this->head->next->value;
 }
 
 template <typename T>
 void forward_list<T>::clear()
 {
-  if (!this->head) return;
-  delete this->head;
-  this->head = nullptr;
+  if (this->empty()) return;
+  delete this->head->next;
+  this->head->next = nullptr;
   this->tail = nullptr;
   this->_size = 0;
 }
@@ -238,6 +255,12 @@ bool forward_list<T>::base_iterator<flag, PointerType>::operator!=(const forward
 
 template <typename T>
 forward_list<T>::ListNode::ListNode(T v) : value{v}, next{nullptr} {}
+
+template <typename T>
+forward_list<T>::ListNode::ListNode() : next{nullptr} {}
+
+template <typename T>
+forward_list<T>::ListNode::ListNode(T v, forward_list<T>::ListNode* n) : value{v}, next{n} {} 
 
 template <typename T>
 forward_list<T>::ListNode::~ListNode()

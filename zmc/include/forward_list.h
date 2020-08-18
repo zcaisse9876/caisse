@@ -13,10 +13,12 @@ private:
     T value;
     ListNode *next;
     ListNode(T v);
+    ListNode(T v, ListNode* n);
+    ListNode();
     ~ListNode();
   }; // struct forward_list<T>::ListNode
 
-  forward_list<T>::ListNode *head;
+  forward_list<T>::ListNode *head = new forward_list<T>::ListNode();
   forward_list<T>::ListNode *tail;
   int _size;
 
@@ -43,7 +45,7 @@ public:
   * Constructors and Operators
   */
   forward_list();
-  explicit forward_list(std::initializer_list<T> vals);
+  forward_list(std::initializer_list<T> vals);
   forward_list(const forward_list<T>& src); // Copy Constructor
   forward_list(forward_list<T>&& src); // Move Constructor
   forward_list<T>& operator=(const forward_list<T>& src); // Copy Assignment Operator
@@ -96,14 +98,14 @@ public:
   */
   forward_list<T>::iterator begin();
   forward_list<T>::iterator end();
-  // forward_list<T>::iterator before_begin();
-  // forward_list<T>::iterator before_end();
+  forward_list<T>::iterator before_begin();
+  forward_list<T>::iterator before_end();
   forward_list<T>::const_iterator begin() const;
   forward_list<T>::const_iterator end() const;
   forward_list<T>::const_iterator cbegin() const;
   forward_list<T>::const_iterator cend() const;
-  // forward_list<T>::const_iterator cbefore_begin() const;
-  // forward_list<T>::const_iterator cbefore_end() const;
+  forward_list<T>::const_iterator cbefore_begin() const;
+  forward_list<T>::const_iterator cbefore_end() const;
 };
 
 #include "../define/forward_list.cpp"
