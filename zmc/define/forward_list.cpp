@@ -4,10 +4,10 @@
 */
 
 template <typename T>
-forward_list<T>::forward_list() : tail{nullptr}, _size{0} {}
+forward_list<T>::forward_list() : tail{nullptr} {}
 
 template <typename T>
-forward_list<T>::forward_list(std::initializer_list<T> src) : tail{nullptr}, _size{0}
+forward_list<T>::forward_list(std::initializer_list<T> src) : tail{nullptr}
 {
   if (!src.size()) return;
   for (const auto& n: src)
@@ -15,21 +15,20 @@ forward_list<T>::forward_list(std::initializer_list<T> src) : tail{nullptr}, _si
 }
 
 template <typename T>
-forward_list<T>::forward_list(const forward_list<T> &src) : tail{nullptr}, _size{0}
+forward_list<T>::forward_list(const forward_list<T> &src) : tail{nullptr}
 {
-  if (!src.size()) return;
+  if (src.empty()) return;
   for (const auto& n: src)
     this->push_back(n);
 }
 
 template <typename T>
-forward_list<T>::forward_list(forward_list<T>&& src): _size{src.size()}
+forward_list<T>::forward_list(forward_list<T>&& src)
 {
   this->head = src.head;
   this->tail = src.tail;
   src.head = nullptr;
   src.tail = nullptr;
-  src._size = 0;
 }
 
 template <typename T>
@@ -39,7 +38,6 @@ forward_list<T>& forward_list<T>::operator=(const forward_list<T> &src)
   if (this->head) delete this->head;
   this->head = new forward_list<T>::ListNode();
   this->tail = nullptr;
-  this->_size = 0;
   for (const auto& n: src)
     this->push_back(n);
 
@@ -51,12 +49,10 @@ forward_list<T>& forward_list<T>::operator=(forward_list<T> &&src)
 {
   if (&src == this) return *this;
   if (this->head) delete this->head;
-  this->_size = src.size();
   this->head = src.head;
   this->tail = src.tail;
   src.head = nullptr;
   src.tail = nullptr;
-  src._size = 0;
   return *this;
 }
 
@@ -73,24 +69,22 @@ forward_list<T>::~forward_list()
 template <typename T>
 void forward_list<T>::push_back(T val)
 {
-  if (!this->_size) return push_front(val);
+  if (this->empty()) return push_front(val);
   this->tail->next = new forward_list<T>::ListNode(val);
   this->tail = this->tail->next;
-  ++this->_size;
 }
 
 template <typename T>
 void forward_list<T>::push_front(T val)
 {
   this->head->next = new forward_list<T>::ListNode(val, this->head->next);
-  if (!this->_size++) this->tail = this->head->next;
+  if (!this->head->next->next) this->tail = this->head->next;
 }
 
 template <typename T>
 void forward_list<T>::pop_front()
 {
-  if (!this->_size) return;
-  --this->_size;
+  if (this->empty()) return;
   auto toDelete = this->head->next;
   this->head->next = toDelete->next;
   toDelete->next = nullptr;
@@ -160,29 +154,20 @@ typename forward_list<T>::const_iterator forward_list<T>::cbefore_end() const
 template <typename T>
 void forward_list<T>::swap(forward_list<T>& src)
 {
-  int tSize = src.size();
   forward_list<T>::ListNode* tHead = src.head;
   forward_list<T>::ListNode* tTail = src.tail;
-  src._size = this->size();
   src.head = this->head;
   src.tail = this->tail;
   this->head = tHead;
   this->tail = tTail;
-  this->_size = tSize;
   tHead = nullptr;
   tTail = nullptr;
 }
 
 template <typename T>
-int forward_list<T>::size() const
-{
-  return this->_size;
-}
-
-template <typename T>
 bool forward_list<T>::empty()
 {
-  return !this->_size;
+  return this->head->next ? false : true;
 }
 
 template <typename T>
@@ -198,7 +183,48 @@ void forward_list<T>::clear()
   delete this->head->next;
   this->head->next = nullptr;
   this->tail = nullptr;
-  this->_size = 0;
+}
+
+template <typename T>
+void forward_list<T>::splice_after(forward_list<T>::iterator toWhere, forward_list<T> &fromWhat)
+{
+  auto tempNode = toWhere.el->next;
+  auto FWTail = fromWhat.head;
+  while (FWTail->next) ++FWTail;
+  toWhere.el->next = fromWhat.head->next;
+  FWTail->next = tempNode;
+  tempNode = nullptr;
+  fromWhat.head->next = nullptr;
+  fromWhat.tail = nullptr;
+}
+
+template <typename T>
+void forward_list<T>::splice_after(forward_list<T>::iterator toWhere, forward_list<T> &fromWhat, forward_list<T>::iterator fromStart, forward_list<T>::iterator fromEnd)
+{
+  auto sectionBegin = fromStart.el->next;
+  auto sectionEnd = fromStart.el;
+  while(sectionEnd->next) { // O(n) must find node preceding fromEnd
+    if (sectionEnd->next == fromEnd.el) break; // Reached node before target end node, success
+    if (sectionEnd->next == toWhere.el) return; // Found location to splice nodes into within the splice from range, failure
+    if (!sectionEnd->next) return; // Reached tail without finding end node, do nothing
+    sectionEnd = sectionEnd->next;
+  }
+
+  fromStart.el->next = fromEnd.el; // Patch out section found above
+  sectionEnd->next = toWhere.el->next; // end of section points to next location in target list;
+  toWhere.el->next = sectionBegin; // locationin target list points to beginning of section;
+  sectionBegin = nullptr;
+  sectionEnd = nullptr;
+}
+
+template <typename T>
+void forward_list<T>::splice_after(forward_list<T>::iterator toWhere, forward_list<T> &fromWhat, forward_list<T>::iterator location)
+{
+  auto tempNode = location.el->next; // Get node following node to be moved
+  location.el->next = tempNode->next; // Patch out the node from the original list
+  tempNode->next = toWhere.el->next; // Point node to place after location to be moved
+  toWhere.el->next = tempNode; // Point location to be moved to node that got moved
+  tempNode = nullptr;
 }
 
 /**

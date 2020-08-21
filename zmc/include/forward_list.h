@@ -20,12 +20,14 @@ private:
 
   forward_list<T>::ListNode *head = new forward_list<T>::ListNode();
   forward_list<T>::ListNode *tail;
-  int _size;
+
+  void push_back(T val); // Only used for constructing, tail becomes invalidated upon any operation on the container
 
 public:
   template <bool flag, typename PointerType>
   class base_iterator
   {
+  friend class forward_list<T>;
   private:
     PointerType el;
 
@@ -57,7 +59,6 @@ public:
   * Modifiers
   */
   void push_front(T val);
-  void push_back(T val);
   void pop_front();
   void clear();
   void swap(forward_list<T>& src);
@@ -72,8 +73,9 @@ public:
   /**
   * Operations
   */  
-  // void splice_after(forward_list<T>::iterator& toWhere, forward_list<T>& fromWhat);
-  // void splice_after(forward_list<T>::iterator& toWhere, forward_list<T>& fromWhat, forward_list<T>::iterator fromStart, forward_list<T>::iterator fromEnd = fromWhat.end());
+  void splice_after(forward_list<T>::iterator toWhere, forward_list<T>& fromWhat); // O(n)
+  void splice_after(forward_list<T>::iterator toWhere, forward_list<T>& fromWhat, forward_list<T>::iterator fromStart, forward_list<T>::iterator fromEnd); // O(n)
+  void splice_after(forward_list<T>::iterator toWhere, forward_list<T>& fromWhat, forward_list<T>::iterator location); // O(1)
   // void remove(T&);
   // void remove_if();
   // void unique();
@@ -91,7 +93,6 @@ public:
   * Capacity
   */
   bool empty();
-  int size() const;
 
   /**
   * Iterators
