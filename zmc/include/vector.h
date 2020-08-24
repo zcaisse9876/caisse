@@ -1,9 +1,6 @@
 #ifndef ZMCVECTOR_H_
 #define ZMCVECTOR_H_
 
-#include <initializer_list>
-#include <stdexcept>
-
 template <typename T>
 class vector                                    // Contiguous Memory Managed Data Array Container
 {
