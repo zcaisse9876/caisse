@@ -1,9 +1,6 @@
 #ifndef ZMCSTRING_H_
 #define ZMCSTRING_H_
 
-#include <ostream>
-#include <cstring>
-
 class string {                                                          // string implementation
 private:
   char *elem;                                                           // Pointer to item T.

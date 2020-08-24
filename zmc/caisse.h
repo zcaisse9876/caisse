@@ -1,6 +1,11 @@
 #ifndef CAISSE_H_
 #define CAISSE_H_
 
+#include <ostream>
+#include <cstring>
+#include <initializer_list>
+#include <stdexcept>
+
 namespace zmc
 {
   #include "include/vector.h" // vector implementation

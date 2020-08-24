@@ -1,9 +1,6 @@
 #ifndef FORWORDZMCLIST_H_
 #define FORWORDZMCLIST_H_
 
-#include <initializer_list>
-#include <iostream>
-
 template <typename T>
 class forward_list
 {

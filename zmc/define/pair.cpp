@@ -31,7 +31,7 @@ void pair<T1, T2>::swap(pair<T1, T2> &src)
   this->second = std::move(b);
 }
 
-template <typename T1, typename T2>
-pair<T1, T2> make_pair(T1 first, T2 second) {
+template <typename T3, typename T4>
+pair<T3, T4> make_pair(T3 first, T4 second) {
   return {first, second};
 }
